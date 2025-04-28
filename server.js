@@ -7,6 +7,12 @@ const port = 4200;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://sozdle.3epge.com');
+    res.header('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+    next();
+});
+
 const APPROVED_WORDS_FILE = path.join(__dirname, 'approvedWords.json');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'default-secret-key';
