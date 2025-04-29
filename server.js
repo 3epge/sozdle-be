@@ -90,10 +90,7 @@ app.post('/api/approve-words', checkSecretKey, (req, res) => {
         return res.status(400).json({ error: 'Words must be a non-empty array' });
     }
     const validWords = [...new Set(
-        words
-            .filter(word => isValidWord(word))
-            .map(word => word.toLowerCase())
-            .filter(word => !approvedWords.includes(word) && !newWords.includes(word))
+        words.filter(word => isValidWord(word) && !approvedWords.includes(word))
     )];
     if (validWords.length === 0) {
         return res.status(400).json({ error: 'No valid new words to approve' });
@@ -102,6 +99,16 @@ app.post('/api/approve-words', checkSecretKey, (req, res) => {
     newWords = newWords.filter(word => !validWords.includes(word));
     saveApprovedWords();
     res.status(201).json({ message: 'Words approved', count: validWords.length, words: validWords });
+});
+
+app.delete('/api/reset', checkSecretKey, (req, res) => {
+    try {
+        newWords = [];
+        res.status(200).json({ message: 'New words cleared' });
+    } catch (error) {
+        console.error('Error clearing new words:', error);
+        res.status(500).json({ error: 'Failed to clear new words' });
+    }
 });
 
 app.listen(port, () => {
